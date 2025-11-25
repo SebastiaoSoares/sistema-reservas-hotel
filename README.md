@@ -14,87 +14,104 @@ O objetivo principal é aplicar os conceitos fundamentais de Programação Orien
 
 ## Definição da estrutura de classes (Modelagem OO)
 
-### Classe: Pessoa
+### Classe: Person
+Classe base que representa uma pessoa no sistema.
 
 **Atributos:**
-- nome: str
-- documento: str
-- email: str
-- telefone: str
+- `name`: str
+- `email`: str
+- `phone`: str
+- `documents`: List[Document]
 
 **Métodos:**
-(nenhum método principal)
+- `add_document(type_doc, number)`: Adiciona um documento à lista.
+- `__str__()`: Retorna o nome da pessoa.
 
 ---
 
-### Classe: Hospede (herda de Pessoa)
+### Classe: Document
+Representa um documento de identificação.
 
 **Atributos:**
-- historico_reservas: list
+- `doc_type`: TypeDocument (Enum: CPF, PASSPORT)
+- `number`: str
 
 **Métodos:**
-visualizar_historico()
+- `__str__()`: Formata o número e tipo do documento para exibição.
 
 ---
 
-### Classe: Quarto
+### Classe: Guest (Herda de Person)
+Representa o hóspede e seu histórico.
 
 **Atributos:**
-- numero: int
-- tipo: str
-- capacidade: int
-- tarifa_base: float
-- status: str
+- `history`: List[Reservation] (Lista de reservas passadas e atuais)
 
 **Métodos:**
-- verificar_disponibilidade(data_inicio, data_fim)
-- bloquear_para_manutencao()
-- liberar_quarto()
-- str()
+- Herda todos os métodos de `Person`.
 
 ---
 
-### Classe: Reserva
+### Classe: Room
+Representa um quarto do hotel com validação de dados de capacidade e tarifa.
 
 **Atributos:**
-- data_entrada: date
-- data_saida: date
-- status: str
-- hospede: Hospede
-- quarto: Quarto
-- lista_adicionais: list
-- lista_pagamentos: list
+- `number`: int
+- `type`: TypeRoom (Enum: SIMPLE, DOUBLE, LUXURY)
+- `capacity`: int (Validado via property: deve ser >= 1)
+- `basic_fare`: float (Validado via property: deve ser > 0)
+- `status`: StatusRoom (Enum: AVAILABLE, OCCUPIED, MAINTENANCE, BLOCKED)
 
 **Métodos:**
-- calcular_total()
-- confirmar()
-- fazer_checkin()
-- fazer_checkout()
-- cancelar()
-- len()
+- `__str__()`: Retorna detalhes formatados do quarto.
+- `__lt__(other)`: Permite ordenação de quartos baseada no tipo e depois no número.
 
 ---
 
-### Classe: Adicional
+### Classe: Reservation
+Representa o contrato de locação entre um Hospede e um Quarto.
 
 **Atributos:**
-- descricao: str
-- valor: float
-- data_lancamento: datetime
+- `guest`: Guest
+- `room`: Room
+- `check_in`: date
+- `check_out`: date
+- `n_guests`: int (Validado para não exceder a capacidade do quarto)
+- `status`: StatusReservation (Enum: PENDING, CONFIRMED, etc.)
+- `payments`: List[Payment]
+- `additionals`: List[Additional]
 
 **Métodos:**
-(nenhum método principal)
+- `__len__()`: Retorna o número de diárias (calculado pela diferença de datas).
+- `__eq__(other)`: Verifica igualdade de reservas baseada no número do quarto e datas.
+- `__str__()`: Retorna um resumo textual da reserva.
 
 ---
 
-### Classe: Pagamento
+### Classe: Additional
+Representa um item de consumo ou serviço extra.
 
 **Atributos:**
-- valor: float
-- forma_pagamento: str
-- data: datetime
+- `description`: str
+- `value`: float
 
-**Métodos:**
-(nenhum método principal)
+---
+
+### Classe: Payment
+Representa uma transação financeira associada à reserva.
+
+**Atributos:**
+- `method`: str
+- `value`: float
+- `date`: date (Define automaticamente a data atual na criação)
+
+---
+
+### Enums
+
+- **TypeRoom:** SIMPLE, DOUBLE, LUXURY.
+- **StatusRoom:** AVAILABLE, OCCUPIED, MAINTENANCE, BLOCKED.
+- **StatusReservation:** PENDING, CONFIRMED, CHECKIN, CHECKOUT, CANCELED, NO_SHOW.
+- **TypeDocument:** CPF, PASSPORT.
 
 ---
