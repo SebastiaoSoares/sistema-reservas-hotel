@@ -1,0 +1,91 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-wheel-metadata/
+wheelhouse/
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.tox/
+.nox/
+coverage.xml
+
+# Translations
+*.mo
+*.pot
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm / IntelliJ
+.idea/
+
+# VS Code
+.vscode/
+
+# Rope
+.ropeproject
+
+# mypy / pytype / ccache
+.mypy_cache/
+.pytype/
+.pyre/
+
+# Profiling data
+.prof
+
+# Logs and runtime files
+*.log
+*.sql
+*.sqlite
+*.db
+
+# macOS / Windows files
+.DS_Store
+Thumbs.db
+
+# Secret/env files
+.env
+.env.*
+secrets.json
+config/*.local
+
+# Static build artifacts
+*.dist-info/
+*.egg-info/
+
+# Generated documentation
+docs/_build/
+
+# Misc
+coverage.*
+*.cover
+*.bak
+*.swp
