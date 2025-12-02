@@ -12,6 +12,18 @@ A persistência dos dados será realizada de forma simples, utilizando um banco 
 
 O objetivo principal é aplicar os conceitos fundamentais de Programação Orientada a Objetos (POO) para modelar um problema de domínio real. O foco está na utilização correta de herança, encapsulamento, validações de dados e composição para criar um software coeso, manutenível e robusto.
 
+## Instruções de Inicialização
+
+Instale as dependências:
+```
+pip install -r requirements.txt
+```
+
+Inicialize o servidor:
+```
+uvicorn main:app --reload
+```
+
 ## Definição da estrutura de classes (Modelagem OO)
 
 ### Classe: Person
