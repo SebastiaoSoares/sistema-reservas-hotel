@@ -158,6 +158,6 @@ def test_relatorios():
     data = response.json()
     
     assert "metricas" in data
-    assert "ocupacao_percentual" in data["metricas"]
+    assert "taxa_ocupacao_percentual" in data["metricas"]
     assert "adr" in data["metricas"]
     assert "revpar" in data["metricas"]

@@ -26,6 +26,16 @@ Este repositório contém a entrega final do Projeto 1 da disciplina de Programa
 
 ## Instruções de Inicialização
 
+Crie um ambiente virtual:
+```
+python -m venv .venv
+```
+
+Inicie o ambiente virtual:
+```
+.\.venv\Scripts\Activate.ps1
+```
+
 Instale as dependências:
 ```
 pip install -r requirements.txt
