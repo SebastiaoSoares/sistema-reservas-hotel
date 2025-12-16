@@ -1,18 +1,40 @@
-# SISTEMA DE RESERVAS DE HOTEL
+# SISTEMA DE RESERVAS DE HOTEL (v1.0)
 
-Este repositório contém o desenvolvimento do Projeto 1 da disciplina de Programação Orientada a Objetos (Engenharia de Software - UFCA), focado no Tema 8: Sistema de Reservas de Hotel.
+Este repositório contém a entrega final do Projeto 1 da disciplina de Programação Orientada a Objetos (Engenharia de Software - UFCA). O sistema é uma API REST desenvolvida com **FastAPI** para gerenciar reservas de hotel, incluindo cálculo de tarifas dinâmicas, controle de estoque de quartos e relatórios gerenciais.
 
-## Descrição do Projeto
+## Funcionalidades Principais (v1.0)
 
-O projeto consiste em desenvolver um sistema de gerenciamento hoteleiro, na forma de uma API mínima. O sistema deve gerenciar o cadastro de hóspedes, o inventário de quartos e o ciclo completo de reservas, incluindo check-in, check-out, políticas de cancelamento e tarifas dinâmicas.
+* **CRUD de Quartos e Hóspedes**: Cadastro completo com validações.
+* **Ciclo de Reserva**: Criação -\> Confirmação -\> Check-in -\> Check-out.
+* **Políticas de Negócio**:
+  * Impedimento de Overbooking.
+  * Validação de capacidade do quarto.
+  * Bloqueio de quartos em manutenção.
+* **Financeiro**:
+  * Tarifas dinâmicas (Fim de Semana +20%, Alta Temporada +50%).
+  * Lançamento de itens adicionais (frigobar, serviços).
+  * Cálculo automático no Check-out.
+* **Relatórios Gerenciais**: Endpoint dedicado para métricas de hotelaria (ADR, RevPAR, Ocupação).
 
-A persistência dos dados será realizada de forma simples, utilizando um banco de dados SQLite.
+## Tecnologias Utilizadas
 
-## Objetivo
-
-O objetivo principal é aplicar os conceitos fundamentais de Programação Orientada a Objetos (POO) para modelar um problema de domínio real. O foco está na utilização correta de herança, encapsulamento, validações de dados e composição para criar um software coeso, manutenível e robusto.
+* **Python 3.12+**
+* **FastAPI**: Framework web moderno e rápido.
+* **SQLAlchemy**: ORM para persistência de dados.
+* **SQLite**: Banco de dados relacional simples.
+* **Pytest**: Suíte de testes automatizados.
 
 ## Instruções de Inicialização
+
+Crie um ambiente virtual:
+```
+python -m venv .venv
+```
+
+Inicie o ambiente virtual:
+```
+.\.venv\Scripts\Activate.ps1
+```
 
 Instale as dependências:
 ```
@@ -21,7 +43,17 @@ pip install -r requirements.txt
 
 Inicialize o servidor:
 ```
-uvicorn main:app --reload
+python run.py
+```
+
+Acesse a **Documentação Interativa** para testar os endpoints:
+`http://127.0.0.1:8000/docs`
+
+## Como Executar os Testes
+
+Para validar todas as regras de negócio e garantir a qualidade da entrega, execute:
+```
+pytest
 ```
 
 ## Definição da estrutura de classes (Modelagem OO)
@@ -127,3 +159,85 @@ Representa uma transação financeira associada à reserva.
 - **TypeDocument:** CPF, PASSPORT.
 
 ---
+
+## Diagrama de Classes
+
+```mermaid
+classDiagram
+    direction LR
+
+    class Room {
+        +Integer id
+        +Integer number
+        +TypeRoom type
+        +Integer capacity
+        +Float basic_fare
+        +StatusRoom status
+        +__str__()
+    }
+
+    class Guest {
+        +Integer id
+        +String name
+        +String email
+        +String phone
+    }
+
+    class Reservation {
+        +Integer id
+        +Date check_in
+        +Date check_out
+        +Integer n_guests
+        +StatusReservation status
+        +__len__()
+    }
+
+    class Payment {
+        +Integer id
+        +String method
+        +Float value
+        +Date date
+    }
+
+    class Additional {
+        +Integer id
+        +String description
+        +Float value
+    }
+
+    %% Enumerators
+    class TypeRoom {
+        <<enumeration>>
+        SIMPLE
+        DOUBLE
+        LUXURY
+    }
+
+    class StatusRoom {
+        <<enumeration>>
+        AVAILABLE
+        OCCUPIED
+        MAINTENANCE
+        BLOCKED
+    }
+
+    class StatusReservation {
+        <<enumeration>>
+        PENDING
+        CONFIRMED
+        CHECKIN
+        CHECKOUT
+        CANCELED
+        NO_SHOW
+    }
+
+    %% Relationships
+    Room "1" -- "*" Reservation : recebe
+    Guest "1" -- "*" Reservation : realiza
+    Reservation "1" *-- "*" Payment : possui
+    Reservation "1" *-- "*" Additional : possui
+    
+    Room ..> TypeRoom
+    Room ..> StatusRoom
+    Reservation ..> StatusReservation
+```

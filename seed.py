@@ -2,9 +2,7 @@ from app.database import SessionLocal, engine, Base
 from app import models
 from datetime import date, timedelta
 
-# limpar banco:
 Base.metadata.drop_all(bind=engine)
-
 Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
@@ -17,8 +15,6 @@ def seed():
         {"number": 102, "type": models.TypeRoom.DOUBLE, "capacity": 2, "basic_fare": 150.0, "status": models.StatusRoom.AVAILABLE},
         {"number": 201, "type": models.TypeRoom.LUXURY, "capacity": 3, "basic_fare": 300.0, "status": models.StatusRoom.AVAILABLE},
         {"number": 202, "type": models.TypeRoom.SIMPLE, "capacity": 1, "basic_fare": 110.0, "status": models.StatusRoom.AVAILABLE},
-
-        # teste da manutenção de um quarto
         {"number": 301, "type": models.TypeRoom.DOUBLE, "capacity": 2, "basic_fare": 140.0, "status": models.StatusRoom.MAINTENANCE},
     ]
 
@@ -30,7 +26,7 @@ def seed():
         db.commit()
         db.refresh(room)
         rooms_objs[room.number] = room
-        print(f"Quarto {room.number} criado (Status: {room.status}).")
+        print(f"Quarto {room.number} criado.")
 
     hospedes_data = [
         {"name": "Sebastião Soares", "email": "sebastiao@email.com", "phone": "8899999999"},
@@ -46,9 +42,15 @@ def seed():
         db.commit()
         db.refresh(guest)
         guests_objs[guest.name] = guest
-        print(f"Hóspede {guest.name} criado.")
+        
+        doc = models.Document(
+            type=models.TypeDocument.CPF,
+            number=f"000.000.000-{guest.id:02d}",
+            guest_id=guest.id
+        )
+        db.add(doc)
+        print(f"Hóspede {guest.name} criado com Documento.")
     
-    # exemplo de reserva confirmada - ramom no quarto 201
     res_futura = models.Reservation(
         guest_id=guests_objs["Ramom Mascena"].id,
         room_id=rooms_objs[201].id,
@@ -60,7 +62,6 @@ def seed():
     db.add(res_futura)
     print("Reserva CONFIRMADA criada para Ramom (Quarto 201).")
 
-    # reserva em andamento - sebastião está no quarto 101
     res_ativa = models.Reservation(
         guest_id=guests_objs["Sebastião Soares"].id,
         room_id=rooms_objs[101].id,
@@ -69,25 +70,25 @@ def seed():
         n_guests=1,
         status=models.StatusReservation.CHECKIN
     )
-    
     rooms_objs[101].status = models.StatusRoom.OCCUPIED
-    
     db.add(res_ativa)
     db.commit()
     db.refresh(res_ativa)
-    print("Reserva em CHECKIN criada para Sebastião (Quarto 101 - Ocupado).")
+    print("Reserva em CHECKIN criada para Sebastião (Quarto 101).")
     
-    # sebastião consumiu coisas no quarto
     adicionais = [
         {"description": "Coca-Cola Lata", "value": 6.50, "reservation_id": res_ativa.id},
         {"description": "Batata Pringles", "value": 15.00, "reservation_id": res_ativa.id},
-        {"description": "Lavanderia (Camisa)", "value": 25.00, "reservation_id": res_ativa.id},
     ]
-
     for add in adicionais:
         db.add(models.Additional(**add))
     
-    print(f"Adicionados {len(adicionais)} itens de consumo para a reserva do Sebastião.")
+    pagamento = models.Payment(
+        method="PIX",
+        value=100.00,
+        reservation_id=res_ativa.id
+    )
+    db.add(pagamento)
 
     db.commit()
     print("Seed concluído com sucesso!")
