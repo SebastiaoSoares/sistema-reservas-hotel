@@ -12,8 +12,21 @@ def create_guest(guest: schemas.GuestCreate, db: Session = Depends(get_db)):
     if db.query(models.Guest).filter(models.Guest.email == guest.email).first():
         raise HTTPException(status_code=400, detail="E-mail já cadastrado.")
 
-    new_guest = models.Guest(**guest.dict())
+    guest_data = guest.dict(exclude={"documents"})
+    new_guest = models.Guest(**guest_data)
+    
     db.add(new_guest)
+    db.commit()
+    db.refresh(new_guest)
+
+    for doc in guest.documents:
+        new_doc = models.Document(
+            type=doc.type,
+            number=doc.number,
+            guest_id=new_guest.id
+        )
+        db.add(new_doc)
+    
     db.commit()
     db.refresh(new_guest)
     return new_guest
